@@ -4,7 +4,7 @@ import {
   timestamp,
   text,
 } from "drizzle-orm/pg-core";
-import { usersTable } from "./user";
+import { usersTable } from "../user";
 
 export const refreshTokensTable = pgTable("refresh_tokens", {
   id: uuid().primaryKey().defaultRandom(),

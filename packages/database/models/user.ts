@@ -7,12 +7,19 @@ import {
   boolean,
   text, 
 } from "drizzle-orm/pg-core";
-
+// ======================================= ENUMS ==============================
 export const accountTypeEnum = pgEnum("account_type", [
   "personal",
   "bussiness",
 ])
 
+export const userStatusEnum = pgEnum("user_status", [
+  "online",
+  "offline",
+]);
+
+
+// ======================================= usersTable ================================
 export const usersTable = pgTable("users", {
   id: uuid("id").primaryKey().defaultRandom(),
 
@@ -27,6 +34,9 @@ export const usersTable = pgTable("users", {
 
   email: varchar('email', { length: 255 }),
   emailVerified: boolean('email_verified').default(false).notNull(),
+
+  userStatus: userStatusEnum("user_status").default("offline").notNull(),
+  lastseen: timestamp("last_seen"),
 
   profileImageUrl: text("profile_image_url"),
 
