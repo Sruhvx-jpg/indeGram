@@ -8,10 +8,45 @@ import { Button } from "../../../components/ui/button";
 import bg from "../bgImage.png";
 import { useLogin } from "~/hooks/api/auth/useLogin";
 
+const COUNTRY_CODES = [
+  { code: "91", country: "India", flag: "🇮🇳" },
+  { code: "1", country: "USA", flag: "🇺🇸" },
+  { code: "44", country: "UK", flag: "🇬🇧" },
+  { code: "86", country: "China", flag: "🇨🇳" },
+  { code: "81", country: "Japan", flag: "🇯🇵" },
+  { code: "33", country: "France", flag: "🇫🇷" },
+  { code: "49", country: "Germany", flag: "🇩🇪" },
+  { code: "39", country: "Italy", flag: "🇮🇹" },
+  { code: "34", country: "Spain", flag: "🇪🇸" },
+  { code: "61", country: "Australia", flag: "🇦🇺" },
+  { code: "64", country: "New Zealand", flag: "🇳🇿" },
+  { code: "27", country: "South Africa", flag: "🇿🇦" },
+  { code: "55", country: "Brazil", flag: "🇧🇷" },
+  { code: "1", country: "Canada", flag: "🇨🇦" },
+  { code: "52", country: "Mexico", flag: "🇲🇽" },
+  { code: "82", country: "South Korea", flag: "🇰🇷" },
+  { code: "66", country: "Thailand", flag: "🇹🇭" },
+  { code: "60", country: "Malaysia", flag: "🇲🇾" },
+  { code: "65", country: "Singapore", flag: "🇸🇬" },
+  { code: "62", country: "Indonesia", flag: "🇮🇩" },
+  { code: "63", country: "Philippines", flag: "🇵🇭" },
+  { code: "84", country: "Vietnam", flag: "🇻🇳" },
+  { code: "31", country: "Netherlands", flag: "🇳🇱" },
+  { code: "41", country: "Switzerland", flag: "🇨🇭" },
+  { code: "46", country: "Sweden", flag: "🇸🇪" },
+  { code: "47", country: "Norway", flag: "🇳🇴" },
+  { code: "45", country: "Denmark", flag: "🇩🇰" },
+  { code: "48", country: "Poland", flag: "🇵🇱" },
+  { code: "39", country: "Vatican", flag: "🇻🇦" },
+  { code: "971", country: "UAE", flag: "🇦🇪" },
+];
+
 export default function LoginPage() {
   const router = useRouter();
+  const [countryCode, setCountryCode] = useState("91");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const [error, setError] = useState("");
   const { loginUserAsync, err, isSuccess, status } = useLogin();
@@ -46,7 +81,7 @@ export default function LoginPage() {
 
     try {
       await loginUserAsync({
-        phoneNumber: phoneNumber.trim(),
+        phoneNumber: `+${countryCode}${phoneNumber.trim()}`,
         password,
       });
     } catch (err: any) {
@@ -98,22 +133,45 @@ export default function LoginPage() {
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
-                <Input
-                  required
-                  placeholder="+91 9876543210"
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                  className="h-12"
-                />
+                <div className="flex gap-3">
+                  <select
+                    value={countryCode}
+                    onChange={(e) => setCountryCode(e.target.value)}
+                    className="h-12 rounded-lg border border-zinc-200 bg-white px-3 text-lg font-medium text-zinc-900 appearance-none cursor-pointer hover:border-zinc-300 focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500/20"
+                  >
+                    {COUNTRY_CODES.map((item) => (
+                      <option key={`${item.code}-${item.country}`} value={item.code}>
+                        {item.flag} +{item.code}
+                      </option>
+                    ))}
+                  </select>
 
-                <Input
-                  required
-                  type="password"
-                  placeholder="Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="h-12"
-                />
+                  <Input
+                    required
+                    placeholder="9876543210"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    className="h-12 flex-1"
+                  />
+                </div>
+
+                <div className="relative">
+                  <Input
+                    required
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="h-12 pr-12"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-xl text-zinc-500 hover:text-zinc-700 transition"
+                  >
+                    {showPassword ? "👁️" : "�"}
+                  </button>
+                </div>
 
                 <div className="flex justify-end">
                   <Link
