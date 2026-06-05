@@ -6,7 +6,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { usersTable } from "./user";
 
-
+// ========================================================
 export const conversationTable = pgTable("conversation", {
     id: uuid("conversation_id").primaryKey().defaultRandom(),
 
@@ -17,6 +17,8 @@ export const conversationTable = pgTable("conversation", {
 export type SelectConversationTable = typeof conversationTable.$inferSelect;
 export type InsertConversationTable = typeof conversationTable.$inferInsert;
 
+
+// ========================================================
 export const conversationMemberTable = pgTable("conversation_member", {
     id: uuid("conversation_member_id").primaryKey().defaultRandom(),
 
@@ -32,6 +34,7 @@ export type SelectConversationMemberTable = typeof conversationMemberTable.$infe
 export type InsertConversationMemberTable = typeof conversationMemberTable.$inferInsert
 
 
+// ========================================================
 export const messageTable = pgTable("message_table", {
       id: uuid("id").primaryKey().defaultRandom(),
 
