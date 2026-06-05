@@ -56,7 +56,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (isSuccess) {
-      router.push("/");
+      router.push("/chat");
     }
   }, [isSuccess, router]);
 

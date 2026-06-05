@@ -1,5 +1,5 @@
 import { db, eq } from "@repo/database";
-import { usersTable,  refreshTokensTable} from "@repo/database/schema";
+import { usersTable, refreshTokensTable } from "@repo/database/schema";
 
 
 import {
@@ -58,6 +58,29 @@ class UserService {
       return null
     }
     return res
+  }
+
+  private async getUserByRefreshToken(refreshToken: string) {
+    const user = await db
+      .select({
+        id: usersTable.id,
+        fullName: usersTable.fullName,
+        phoneNumber: usersTable.phoneNumber,
+        profileImageUrl: usersTable.profileImageUrl,
+      })
+      .from(refreshTokensTable)
+      .innerJoin(
+        usersTable,
+        eq(refreshTokensTable.userId, usersTable.id)
+      )
+      .where(eq(refreshTokensTable.token, refreshToken))
+      .limit(1);
+
+    if (!user[0]) {
+      throw apiErr.unauthorizedAccess("Invalid refresh token");
+    }
+
+    return user[0];
   }
 
   // ========================================== PUBLIC METHODS =======================================================================
@@ -133,7 +156,16 @@ class UserService {
       throw error
     }
   }
-//end
+
+
+  public async getMe(refreshToken: string) {
+    const user = await this.getUserByRefreshToken(refreshToken)
+
+    return {
+      ...user
+    }
+  }
+  //end
 }
 
 export default UserService;

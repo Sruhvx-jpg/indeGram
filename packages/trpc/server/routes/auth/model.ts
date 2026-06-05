@@ -23,3 +23,15 @@ export const logInOutputModel = z.object({
     fullName: z.string().describe("user's fullname"),
     phoneNumber: z.string().describe("user's phone number") ,
 })
+
+export const getMeInput = z.object({
+    refresh_token: z.string().describe("refresh token")
+})
+
+export const getMeOutput = z.object({
+  id: z.string().uuid(),
+  fullName: z.string(),
+  phoneNumber: z.string(),
+  profileImageUrl: z.string().nullable(),
+});
+

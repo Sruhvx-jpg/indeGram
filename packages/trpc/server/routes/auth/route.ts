@@ -1,9 +1,10 @@
 import { publicProcedure, router } from "../../trpc";
 import { TRPCError } from "@trpc/server";
 import { generatePath } from "../../utils/path-generator";
-import { logInInputModel, logInOutputModel, registerUserInputModel, registerUserOutputModel } from "./model";
+import { getMeOutput, logInInputModel, logInOutputModel, registerUserInputModel, registerUserOutputModel } from "./model";
 import { userService } from "../../services"
 import { setAuthToken } from "../../utils/cookie";
+import apiErr from "@repo/utils/apiErr";
 
 
 
@@ -49,8 +50,8 @@ export const authRouter = router({
             setAuthToken(ctx, result.accessToken)
             ctx.createCookie("refresh_token", result.refreshToken)
 
-            
-            const{userId, fullName, phoneNumber } = result
+
+            const { userId, fullName, phoneNumber } = result
             return {
                 userId,
                 fullName, phoneNumber
@@ -61,5 +62,32 @@ export const authRouter = router({
                 message: error instanceof Error ? error.message : "Login failed",
             })
         }
-    })
+    }),
+
+    //=================================================== getMe =======================================================
+    getMe: publicProcedure
+        .output(getMeOutput)
+        .query(async ({ ctx }) => {
+            try {
+                const refreshToken =
+                    ctx.getCookie("refresh_token")
+
+                if (!refreshToken) {
+                    throw apiErr.unauthorizedAccess("invalid refresh token, login to get one");
+                }
+
+                const data =  await userService.getMe(refreshToken);
+
+                return {
+                    ...data
+                }
+            } catch (error) {
+                console.log("getme error: ")
+                throw error
+            }
+        }),
+
+
+
+    //end 
 })
