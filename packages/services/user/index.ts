@@ -17,6 +17,7 @@ import {
 import apiErr from "@repo/utils/apiErr"
 import { hashIT, comparePass } from "@repo/utils/hashIT"
 import { generateAccTok, generateRefTok } from "@repo/utils/jwtUtils"
+import { userInfo } from "os";
 
 class UserService {
   //================================================ PRIVATE METHODS ==========================================================
@@ -132,7 +133,7 @@ class UserService {
       throw error
     }
   }
-
+//end
 }
 
 export default UserService;

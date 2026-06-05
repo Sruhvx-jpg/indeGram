@@ -7,6 +7,7 @@ import { Input } from "../../../components/ui/input";
 import { Button } from "../../../components/ui/button";
 import bg from "../bgImage.png";
 import { useLogin } from "~/hooks/api/auth/useLogin";
+import { useUserStore } from "~/hooks/userStore";
 
 const COUNTRY_CODES = [
   { code: "91", country: "India", flag: "🇮🇳" },
@@ -43,6 +44,8 @@ const COUNTRY_CODES = [
 
 export default function LoginPage() {
   const router = useRouter();
+  const setUser = useUserStore((state) => state.setUser)
+
   const [countryCode, setCountryCode] = useState("91");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
@@ -80,10 +83,12 @@ export default function LoginPage() {
     }
 
     try {
-      await loginUserAsync({
+      const user = await loginUserAsync({
         phoneNumber: `+${countryCode}${phoneNumber.trim()}`,
         password,
       });
+
+      setUser(user)
     } catch (err: any) {
       setError(
         err?.message || "Something went wrong. Please try again."
