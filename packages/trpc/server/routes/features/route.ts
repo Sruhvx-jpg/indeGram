@@ -1,15 +1,15 @@
 import { userFeature } from "../../services";
-import { publicProcedure, router } from "../../trpc";
+import { publicProcedure, router, TokenBasedProcedure } from "../../trpc";
 import { generatePath } from "../../utils/path-generator";
 import { addToContactInput, addToContactOutput, listContactsInput, listContactsOutput } from "./model";
 
 
 
 const TAGS = ["Authentication"];
-const getPath = generatePath("/authentication");
+const getPath = generatePath("/features");
 
 export const userFeatureRouter = router({
-    addToContact: publicProcedure
+    addToContact: TokenBasedProcedure
         .meta({
             openapi: {
                 method: "POST",
@@ -26,13 +26,17 @@ export const userFeatureRouter = router({
             }
         }),
 
-        listContacts : publicProcedure
+        listContacts : TokenBasedProcedure
         .meta({
             openapi: {
-                method: 'post',
+                method: 'POST',
                 path: getPath('listContacts'),
                 tags: TAGS
             }
-        }).input(listContactsInput).output(listContactsOutput)
+        }).input(listContactsInput).output(listContactsOutput).query( async({input}) => {
+            const result  = await userFeature.listContact(input.phoneNumber)
+
+            return result
+        })
 //end
 });

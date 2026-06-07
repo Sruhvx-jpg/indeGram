@@ -13,10 +13,12 @@ export const listContactsInput = z.object({
     phoneNumber: z.string()
 })
 
-export const listContactsOutput = z.object({
-    phoneNumber: z.string(),
-    fullName: z.string(),
-    profileImageUrl: z.string().optional(),
-    lastSeen: z.string().optional()
-})
+export const listContactsOutput = z.array(
+    z.object({
+        phoneNumber: z.string(),
+        fullName: z.string(),
+        profileImageUrl: z.string().nullable(),
+        lastSeen: z.date().nullable()
+    })
+);
 

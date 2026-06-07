@@ -5,3 +5,8 @@ export const addToContactInput = z.object({
     ownerId: z.string().describe("contact table's owner id")
 }) 
 export type addToContactType = z.infer<typeof addToContactInput>
+
+export const listContactInput = z.object({
+    phoneNumber: z.string().describe("phoneNumber of user")
+})
+export type listContactInputType = z.infer<typeof listContactInput>

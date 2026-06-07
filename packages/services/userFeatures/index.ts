@@ -1,8 +1,11 @@
 import { contactsTable, usersTable } from "@repo/database/schema";
-import { addToContactInput, addToContactType } from "./model";
 import db, { and, eq } from "@repo/database";
-import apiErr from "@repo/utils/apiErr";
 
+import apiErr from "@repo/utils/apiErr";
+import {
+    addToContactInput,
+    addToContactType,
+} from "./model";
 class userFeatures {
     //=========================================== private methods ==========================================================
     private async findUserById(id: string) {
@@ -48,7 +51,7 @@ class userFeatures {
                     )
                 )
 
-                return isContactExist.length > 0
+            return isContactExist.length > 0
         } catch (error) {
             console.log("checkContactExist error")
             throw error
@@ -68,18 +71,44 @@ class userFeatures {
 
             const contactId = await this.findContactByPhoneNum(phoneNumber)
 
-            if(contactId == undefined) throw apiErr.dataNotFound()
+            if (contactId == undefined) throw apiErr.dataNotFound()
             const isContactExist = await this.checkContactExist(ownerId, contactId?.id)
 
-            if(isContactExist) {
+            if (isContactExist) {
                 throw apiErr.dataAlreadyExist("phoneNumber already in contact")
             }
 
-            await db.insert(contactsTable).values({ownerId, contactId: contactId.id})
+            await db.insert(contactsTable).values({ ownerId, contactId: contactId.id })
             let message = `${phoneNumber} added to contact`
 
             return message
         } catch (error) {
+            throw error
+        }
+    }
+
+    public async listContact(phoneNumber: string) {
+        try {
+            const response = await this.findContactByPhoneNum(phoneNumber)
+            if (!response) throw apiErr.dataNotFound()
+
+            const ownerId = response.id
+
+
+            const contactList = await db
+                .select({
+                    phoneNumber: usersTable.phoneNumber,
+                    fullName: usersTable.fullName,
+                    profileImageUrl: usersTable.profileImageUrl,
+                    lastSeen: usersTable.lastseen
+                })
+                .from(contactsTable)
+                .innerJoin(usersTable, eq(usersTable.id, contactsTable.contactId))
+                .where(eq(contactsTable.ownerId, ownerId))
+
+            return contactList
+        } catch (error) {
+            console.log("listContact Method error")
             throw error
         }
     }
