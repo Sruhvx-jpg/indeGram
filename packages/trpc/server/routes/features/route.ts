@@ -1,7 +1,7 @@
 import { userFeature } from "../../services";
 import { publicProcedure, router } from "../../trpc";
 import { generatePath } from "../../utils/path-generator";
-import { addToContactInput, addToContactOutput } from "./model";
+import { addToContactInput, addToContactOutput, listContactsInput, listContactsOutput } from "./model";
 
 
 
@@ -19,6 +19,20 @@ export const userFeatureRouter = router({
         })
         .input(addToContactInput).output(addToContactOutput)
         .mutation(async ({ input }) => {
-            await userFeature.addToContact(input);
+            const message = await userFeature.addToContact(input);
+
+            return {
+                message
+            }
         }),
+
+        listContacts : publicProcedure
+        .meta({
+            openapi: {
+                method: 'post',
+                path: getPath('listContacts'),
+                tags: TAGS
+            }
+        }).input(listContactsInput).output(listContactsOutput)
+//end
 });
